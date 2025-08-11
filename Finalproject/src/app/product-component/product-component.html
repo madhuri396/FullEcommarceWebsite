@@ -1,0 +1,35 @@
+<p>product-component works!</p>
+<p>Product count: {{ products.length }}</p>
+
+
+    <table *ngIf="products.length > 0" class="table table-striped table-bordered">
+   <thead>
+    <tr>
+    <th>ProductName</th>
+    <th>Description</th>
+      <th> Title</th>
+       <th>UnitPrice</th>
+        <th>ImageUrl</th>
+      <th>Active status</th>
+       <th>UnitsInStock</th>
+    </tr>
+  </thead>
+  <tbody>
+       
+        
+<ng-container *ngFor="let product of products">
+  <tr>
+  <td>{{product.name}}</td>
+  <td>{{product.description}}</td>
+  <td>{{product.title}}</td>
+  <td>{{product.unitPrice}}</td>
+  <td>{{product.imageUrl}}</td>
+  <td>{{product.active}}</td>
+  <td>{{product.unitsInStock}}</td>
+  </tr>
+
+  
+</ng-container>
+</tbody>
+</table>
+  

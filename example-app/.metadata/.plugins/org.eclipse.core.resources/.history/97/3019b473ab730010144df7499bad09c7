@@ -1,0 +1,5 @@
+package com.exa.client;
+
+public class RedisConfig {
+
+}

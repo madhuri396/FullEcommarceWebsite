@@ -1,0 +1,39 @@
+
+<div class="product-details-container">
+  <div class="product-image-wrapper">
+    <img [src]="product.imageUrl" alt="{{ product.name }}" class="product-image" />
+  </div>
+
+  <div class="product-info">
+    <h2 class="product-name">{{ product.name }}</h2>
+    <p class="product-description">{{ product.description }}</p>
+    <p class="product-title">{{ product.title }}</p>
+    <p class="product-price">
+      Price: {{ product.unitPrice | currency:'INR':'symbol':'1.0-0' }}
+    </p>
+    <!-- <p class="product-stock">Stock: {{ product.unitsInStock }}</p>
+    <p class="product-active">Active: {{ product.active ? '✅' : '❌' }}</p>
+     -->
+
+    <div class="action-buttons">
+      <button class="btn add-cart" *ngIf="!addedtocart" (click)="addToCart(product)">Add to Cart</button> 
+      <div class="cart-message" *ngIf="addedtocart">
+  ✅ <strong>{{ product.name }}</strong> added to cart.
+  
+</div>
+      <button class="btn gotocart" *ngIf="addedtocart" [routerLink]="'/cart'" routerLinkActive="active-link">
+    goto cart
+  </button>
+      <button class="btn order-now" >OrderNow</button>
+    </div>
+    <div class="back-button">
+      <a class="btn back" (click)="goback()"> << Back</a>
+  </div>
+</div>
+
+<div *ngIf="!product" class="loading-message">
+  <p>Loading product details...</p> 
+
+</div>
+
+

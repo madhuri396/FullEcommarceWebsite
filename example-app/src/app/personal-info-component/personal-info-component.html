@@ -1,0 +1,47 @@
+<h2>👤 Personal Information</h2>
+
+<!-- View Mode -->
+<div *ngIf="!isEditMode" class="info-view">
+  <p><strong>Name:</strong> {{ userData.username }}</p>
+  <p><strong>Email:</strong> {{ userData.email }}</p>
+  <p><strong>Phone:</strong> {{ userData.phoneNumber }}</p>
+  <p><strong>Role:</strong> {{ userData.role }}</p>
+
+  <div class="action-buttons">
+    <button class="btn btn-primary" (click)="editDetails()">Edit Details</button>
+    <button class="btn btn-secondary" (click)="changePassword()">Change Password</button>
+    <button class="btn btn-danger" (click)="deleteAccount()">Delete Account</button>
+  </div>
+</div>
+
+<!-- Edit Mode -->
+<div *ngIf="isEditMode" class="info-edit">
+  <form [formGroup]="userForm">
+    <label>
+      Name:
+      <input formControlName="username" type="text" />
+    </label>
+
+    <label>
+      Email:
+      <input formControlName="email" type="email" />
+    </label>
+
+    <label>
+      Phone:
+      <input formControlName="phoneNumber" type="tel" />
+    </label>
+
+    <label>
+      Role:
+     
+     <input formControlName="role" type="text" [disabled]="true" />
+
+    </label>
+  </form>
+
+  <div class="action-buttons">
+    <button class="btn btn-success" (click)="saveDetails()">Save</button>
+    <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+  </div>
+</div>

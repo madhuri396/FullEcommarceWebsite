@@ -1,0 +1,109 @@
+.product-details-container {
+ margin-left: 250px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 20px;
+}
+
+.product-image-wrapper {
+  flex: 1;
+  max-width: 400px;
+}
+
+.product-image {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.product-info {
+  flex: 2;
+}
+
+.product-name {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.product-description {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.product-price {
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.action-buttons .btn {
+  padding: 10px 20px;
+  margin-right: 10px;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.add-cart {
+  background-color: #ff9800;
+  color: #fff;
+}
+
+.order-now {
+  background-color: #4caf50;
+  color: #fff;
+}
+.back-button{
+    background-color: #2196f3;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 20px;
+}
+.gotocart{
+    background-color: #f44336;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 20px;
+}
+.action-buttons .btn {
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-cart {
+  background-color: #27ae60;
+  color: white;
+}
+
+.gotocart {
+  background-color: #f39c12;
+  color: white;
+}
+
+.order-now {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+.cart-message {
+  background-color: #e8f5e9;
+  border: 1px solid #81c784;
+  padding: 10px;
+  border-radius: 6px;
+  color: #2e7d32;
+  margin-top: 10px;
+}

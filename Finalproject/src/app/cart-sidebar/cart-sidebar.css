@@ -1,0 +1,106 @@
+/* 🌈 Panel Layout */
+.address-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+
+/* 🎯 Button Column */
+.address-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 180px;
+}
+
+/* ✨ Button Styles */
+.btn {
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-change {
+  background-color: #0288d1;
+  color: white;
+}
+.btn-change:hover {
+  background-color: #0277bd;
+}
+
+.btn-add {
+  background-color: #43a047;
+  color: white;
+}
+.btn-add:hover {
+  background-color: #388e3c;
+}
+
+/* 🏠 Address Selector Column */
+.address-selector {
+  background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  min-width: 300px;
+  flex-grow: 1;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* 🔄 Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* 🏷️ Address Option Styling */
+.address-option {
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+.address-option:hover {
+  background-color: #e3f2fd;
+}
+.address-option.selected {
+  background-color: #c8e6c9;
+  border-left: 4px solid #43a047;
+}
+
+/* 📝 Label and Radio Input */
+.form-check-label {
+  padding: 0.6rem;
+  border-radius: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #333;
+}
+.form-check-input:checked {
+  accent-color: #43a047;
+  transform: scale(1.1);
+}
+
+/* 📱 Responsive Layout */
+@media (max-width: 768px) {
+  .address-panel {
+    flex-direction: column;
+  }
+
+  .address-selector {
+    width: 100%;
+    margin-top: 1rem;
+  }
+}
+
+/* 🧭 Section Titles */
+h4, h5 {
+  font-weight: 700;
+  color: #1976d2;
+}

@@ -1,0 +1,59 @@
+<div class="container mt-4 p-3 border rounded bg-light">
+  <h5 class="mb-3">{{ isEditMode ? 'Edit Address' : 'Add New Address' }}</h5>
+
+  <div class="mb-3">
+    <label class="form-label">Receiver Name</label>
+    <input type="text" class="form-control" [(ngModel)]="newAddress.receiverName" />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Phone Number</label>
+    <input type="text" class="form-control" [(ngModel)]="newAddress.phoneNumber" />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Address Line 1</label>
+    <input type="text" class="form-control" [(ngModel)]="newAddress.line1" />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Address Line 2</label>
+    <input type="text" class="form-control" [(ngModel)]="newAddress.line2" />
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label">City</label>
+      <input type="text" class="form-control" [(ngModel)]="newAddress.city" />
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label">State</label>
+      <input type="text" class="form-control" [(ngModel)]="newAddress.state" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <label class="form-label">ZIP Code</label>
+      <input type="text" class="form-control" [(ngModel)]="newAddress.zipCode" />
+    </div>
+    <div class="col-md-6 mb-3">
+      <label class="form-label">Country</label>
+      <input type="text" class="form-control" [(ngModel)]="newAddress.country" />
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Label (e.g., Home, Work)</label>
+    <input type="text" class="form-control" [(ngModel)]="newAddress.type" />
+  </div>
+
+  <button class="btn btn-primary" (click)="isEditMode ? save() : add()">
+    {{ isEditMode ? 'Save Changes' : 'Add Address' }}
+  </button>
+
+   
+</div>
+<div class="back-button">
+      <a class="btn back" (click)="goback()"> << Back</a>
+  </div>

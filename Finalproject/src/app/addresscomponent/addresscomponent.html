@@ -1,0 +1,28 @@
+<h2 class="section-title">📦 Select Your Address</h2>
+
+<div *ngFor="let addr of addresses; let i = index" class="address-card">
+  <label class="card-content">
+    <input type="radio" name="selectedAddress"
+           [checked]="selectedAddressIndex === i"
+           (click)="selectAddress(i)" />
+    <span>
+      {{addr.receiverName}},{{ addr.line1 }}, {{ addr.city }}, {{ addr.state }} – {{ addr.zipCode }}
+    </span>
+  </label>
+  <button class="edit-button" [routerLink]="['/edit-address', addr.id]">
+    ✏️ Edit
+  </button>
+  <button (click)="onDeleteAddress(i)">Delete</button>
+
+
+</div>
+
+<div *ngIf="selectedAddressIndex !== null" class="selected-message">
+  ✅ <strong>Selected:</strong> {{ addresses[selectedAddressIndex].line1 }}
+</div>
+
+<div class="add-address-button">
+  <button [routerLink]="['/add-address']" >
+  ➕ Add Address
+</button>
+</div>

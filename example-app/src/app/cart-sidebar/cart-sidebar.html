@@ -1,0 +1,39 @@
+<!-- 🏷️ Current Address Display -->
+<h4>Current Shipping Address</h4>
+<p *ngIf="selected">
+ {{selected.receiverName}} - {{selected.phoneNumber}} -{{ selected.line1 }}, {{ selected.city }} – {{ selected.zipCode }}
+</p>
+
+<!-- 📦 Side-by-Side Flex Layout -->
+<div class="address-panel d-flex flex-wrap gap-3 mt-3 align-items-start">
+
+  <!-- 🎯 Button Column -->
+  <div class="address-actions d-flex flex-column gap-2">
+    <button class="btn btn-change" (click)="changeMode = !changeMode">
+      {{ changeMode ? 'Cancel' : '🛠️ Change Address' }}
+    </button>
+
+    <button class="btn btn-add" [routerLink]="['/add-address']">
+      ➕ Add Address
+    </button>
+  </div>
+
+  <!-- 🏠 Address Selector Column -->
+  <div *ngIf="changeMode" class="address-selector">
+    <h5 class="mb-3">🏠 Choose Another Address</h5>
+
+    <div *ngFor="let addr of addresses" class="form-check mb-2 address-option"
+         [ngClass]="{ 'selected': addr === selected }">
+      <label class="form-check-label d-flex align-items-center gap-2 w-100">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="selectedAddress"
+          [value]="addr"
+          [(ngModel)]="selected"
+          (change)="switchAddress(addr)" />
+        <span>{{addr.receiverName}} ,{{addr.phoneNumber}},{{ addr.line1 }}, {{ addr.city }} – {{ addr.zipCode }}</span>
+      </label>
+    </div>
+  </div>
+</div>

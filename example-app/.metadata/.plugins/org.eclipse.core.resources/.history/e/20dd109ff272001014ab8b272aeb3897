@@ -1,0 +1,83 @@
+package com.exa.service;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.exa.entity.Order;
+import com.exa.entity.Payment;
+import com.exa.enums.PaymentStatus;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.razorpay.Refund;
+import com.razorpay.Utils;
+
+import jakarta.annotation.PostConstruct;
+
+@Service
+public class RazorpayService {
+
+    private RazorpayClient client;
+
+    @Value("${razorpay.key_id}")
+    private String keyId;
+
+    @Value("${razorpay.key_secret}")
+    private String keySecret;
+
+    @PostConstruct
+    public void init() throws RazorpayException {
+        client = new RazorpayClient(keyId, keySecret);
+    }
+    public Payment initiatePayment(double amount, String method) {
+        JSONObject request = new JSONObject();
+        request.put("amount", (int)(amount * 100)); // Razorpay expects paise
+        request.put("currency", "INR");
+        request.put("receipt", UUID.randomUUID().toString());
+        request.put("payment_capture", 1);
+
+        try {
+            com.razorpay.Order razorOrder = client.orders.create(request);
+
+            Payment payment = new Payment();
+            payment.setAmount(amount);
+            payment.setMethod(method);
+            payment.setRazorpayOrderId(razorOrder.get("id"));
+            payment.setStatus(PaymentStatus.INITIATED);
+            payment.setPaymentDate(LocalDateTime.now());
+
+            return payment;
+        } catch (RazorpayException e) {
+            throw new RuntimeException("Payment initiation failed", e);
+        }
+    }
+    public boolean verifySignature(String orderId, String paymentId, String signature) {
+        Map<String, String> params = new HashMap<>();
+        params.put("razorpay_order_id", orderId);
+        params.put("razorpay_payment_id", paymentId);
+        params.put("razorpay_signature", signature);
+
+        try {
+            Utils.verifyPaymentSignature((JSONObject) params, keySecret);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public boolean refundPayment(String paymentId) {
+        try {
+            JSONObject request = new JSONObject();
+            request.put("amount", 5000); // in paise
+
+            Refund refund = client.payments.refund(paymentId, request);
+            return true;
+        } catch (RazorpayException e) {
+            return false;
+        }
+    }
+}

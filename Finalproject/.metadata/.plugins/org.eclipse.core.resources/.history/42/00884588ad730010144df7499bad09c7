@@ -1,0 +1,55 @@
+package com.exa.dto;
+
+
+import java.math.BigDecimal;
+import java.util.List;
+
+public class TempOrderData {
+    private OrderRequestDTO request;
+    private AddressDTO address;
+    private List<OrderItemDTO> items;
+    private BigDecimal total;
+
+    public OrderRequestDTO getRequest() {
+        return request;
+    }
+
+    public void setRequest(OrderRequestDTO request) {
+        this.request = request;
+    }
+
+    public AddressDTO getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDTO address) {
+        this.address = address;
+    }
+
+    public List<OrderItemDTO> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItemDTO> items) {
+        this.items = items;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
+
+    public String getFullAddress() {
+        return String.join(", ",
+            address.getLine1(),
+            address.getLine2(),
+            address.getCity(),
+            address.getState(),
+            address.getZipCode(),
+            address.getCountry()
+        );
+    }
+}

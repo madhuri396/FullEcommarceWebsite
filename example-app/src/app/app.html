@@ -1,0 +1,187 @@
+<!-- 
+<app-product-component></app-product-component> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NavBar with Search & Cart</title>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+  
+</head>
+<body>
+
+  <nav class="navbar">
+    <!-- Left Side: Logo + Nav Links -->
+    <div class="nav-left">
+      <!-- Hamburger Icon -->
+<div class="hamburger" (click)="toggleSidebar()" (click)="category()">
+  &#9776;
+</div>
+
+<!-- Sidebar Menu -->
+<div class="sidebar" [class.open]="isSidebarOpen" >
+  <div class="sidebar-header">
+    <span class="sidebar-title">Categories</span>
+    <span class="close-btn" (click)="toggleSidebar()">&times;</span>
+  </div>
+    
+  <ul class="sidebar-menu" >
+    <li *ngFor="let category of categories" class="menu-item">
+      <a [routerLink]="'/category/' + category.id" routerLinkActive="active-link">{{ category.categoryName }}</a> 
+    </li>
+    </ul>
+    
+  <!-- <li (click)="toggleSubmenu('electronics')" class="menu-item">
+    Electronics
+    <ul *ngIf="activeCategory === 'electronics'" class="submenu">
+      <li><a routerLink="category/1" routerLinkActive="active-link">Laptops</a></li>
+      <li><a routerLink="category/2" routerLinkActive="active-link">Mobiles</a></li>
+    </ul>
+  </li>
+  <li class="menu-item"><a routerLink="category/3" routerLinkActive="active-link">Clothing</a></li>
+  <li class="menu-item"><a routerLink="category/4" routerLinkActive="active-link">Footwear</a></li>
+  <li class="menu-item"><a routerLink="category/5" routerLinkActive="active-link">Makeup Accessories</a></li>
+  <li class="menu-item"><a routerLink="category/6" routerLinkActive="active-link">Jewellery</a></li>
+</ul> -->
+</div>
+      <a href="#" class="logo">ShopMate</a>
+      <a href="#">Home</a>
+      <a href="#">Products</a>
+      <a href="#">Contact</a>
+    </div>
+
+    <!-- Center: Search Bar -->
+    <div class="nav-center">
+  <div class="search-container">
+    <input type="text" class="search-input" placeholder="Search products..." [(ngModel)]="sear"  (ngModelChange)="onSearchChange()"
+/>
+<!-- 
+<input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)" />
+<app-product-list [searchTerm]="searchQuery"></app-product-list>    to pass searchvalue to productlist component directly -->
+
+    <button class="icon-button" id="searchBtn">
+      <i class="fas fa-search"></i>
+    </button>
+  </div>
+</div>
+
+
+ <!-- <div class="nav-right">
+  <div class="cart-wrapper" id="cartBtn">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-count">3</span>
+    <div class="cart-tooltip">Total: ₹1,250</div>
+  </div>
+
+
+
+
+
+Profile Section
+<div class="profile-wrapper" *ngIf="isLoggedIn">
+  <i class="fas fa-user-circle"></i>
+  <div class="profile-menu" >
+     
+    
+     <a (click)="showPersonalInfo()" class="btn btn-outline-info">Personal Info</a>
+    <a href="#">Addresses</a>
+    <a href="#">Orders</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </div>
+</div>
+
+Show Login when not authenticated
+<div class="login-wrapper" *ngIf="!isLoggedIn">
+  <a class="btn-login" [routerLink]="['/login']">Login</a>
+  <a class="btn-signup" [routerLink]="['/signup']">Sign Up</a>
+</div>
+</div>
+ -->
+<!-- <div class="nav-right">
+  Cart always visible 
+  <div class="cart-wrapper" id="cartBtn">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-count">3</span>
+    <div class="cart-tooltip">Total: ₹1,250</div>
+  </div>
+
+   If not logged in
+  <ng-container *ngIf="!isLoggedIn">
+    <a class="btn-login" [routerLink]="['/login']">Login</a>
+    <a class="btn-signup" [routerLink]="['/signup']">Sign Up</a>
+  </ng-container>
+
+ If logged in -->
+  <!-- <ng-container *ngIf="isLoggedIn">
+    <div class="profile-wrapper">
+      <i class="fas fa-user-circle"></i>
+      <div class="profile-menu">
+        <a (click)="showPersonalInfo()" class="btn btn-outline-info">Personal Info</a>
+        <a href="#">Addresses</a>
+        <a href="#">Orders</a>
+        <a href="#" id="logoutBtn">Logout</a>
+      </div>
+    </div>
+  </ng-container> 
+  <div class="profile-wrapper" *ngIf="isLoggedIn" (click)="toggleProfileMenu()">
+  <i class="fas fa-user-circle"></i>
+
+  <div class="profile-menu" [class.show]="showProfileMenu">
+    <a (click)="showPersonalInfo()" class="btn btn-outline-info">Personal Info</a>
+    <a href="#">Addresses</a>
+    <a href="#">Orders</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </div>
+</div>
+</div> -->
+
+<div class="nav-right">
+  <a (click)="goToCart()" class="cart-wrapper" id="cartBtn">
+  <i class="fas fa-shopping-cart"></i>
+  <span class="cart-count">{{ cartCount }}</span>
+  <div class="cart-tooltip">Total: ₹{{ cartTotal }}</div>
+</a>
+</div>
+  <!-- Cart is always visible -->
+  <!-- <div class="cart-wrapper" id="cartBtn">
+    <i class="fas fa-shopping-cart"></i>
+    <a [routerLink]="['/cart']">cart</a>
+     <app-cartcomponent></app-cartcomponent> 
+    <span class="cart-count">{{cartCount}}</span>
+    <div class="cart-tooltip">{{cartTotal}}</div>
+  </div> -->
+  
+
+  <!-- Show when user is NOT logged in -->
+  <ng-container *ngIf="!isLoggedIn">
+    <a class="btn btn-login" [routerLink]="['/login']">Login</a>
+    <a class="btn btn-signup" [routerLink]="['/register']">Sign Up</a>
+  </ng-container>
+
+  <!-- Show when user IS logged in -->
+  <div class="profile-wrapper" *ngIf="isLoggedIn" (click)="toggleProfileMenu()">
+    <i class="fas fa-user-circle"></i>
+
+    <div class="profile-menu" [class.show]="showProfileMenu">
+      <a [routerLink]="'/personal-info'" class="btn btn-outline-info">Personal Info</a>
+      <a [routerLink]="'/addresses'"> Addresses </a>
+      <a [routerLink]="'/orders'">Orders</a>
+      <a href="#" (click)="logout()">Logout</a>
+    </div>
+  </div>
+
+
+  </nav>
+ 
+
+</body>
+</html>
+
+<br>
+<div class="container">
+  <router-outlet></router-outlet> 
+</div>

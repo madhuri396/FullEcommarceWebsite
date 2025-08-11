@@ -1,0 +1,12 @@
+package com.exa.dto;
+
+import java.util.List;
+
+import com.exa.entity.Order;
+
+public class OrderPageResponse {
+    private List<Order> orders;
+    private boolean hasMore;
+
+    // Getters and setters
+}
