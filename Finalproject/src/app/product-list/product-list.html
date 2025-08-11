@@ -1,0 +1,58 @@
+<!-- 
+<table class="table table-hover table-bordered table-striped align-middle text-center shadow-sm">
+  <thead class="table-primary">
+    <tr>
+      <th>Product ID</th>
+      <th>Product Name</th>
+      <th>Description</th>
+      <th>Title</th>
+      <th>Unit Price</th>
+      <th>Image</th>
+      <th>Active</th>
+      <th>Stock</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of products">
+      <td>{{ product.id }}</td>
+      <td>{{ product.name }}</td>
+      <td>{{ product.description }}</td>
+      <td>{{ product.title }}</td>
+      <td>{{ product.unitPrice | currency:'INR':'symbol':'1.0-0' }}</td>
+     <td><img [src]="product.imageUrl" alt="{{ product.name }}" class="img-thumbnail" style="max-width: 70px;"></td> -->
+    <!-- <td><img [src]="'assets/images/products/laptops/lenovalap.jpeg'"></td>
+    <td><img [src]="product.imageUrl" alt="{{ product.name }}" class="img-thumbnail" style="max-width: 70px;"></td>
+     <td>{{ product.active ? '✅' : '❌' }}</td>
+      <td>{{ product.unitsInStock }}</td>
+    </tr>
+  </tbody>
+</table> -->
+
+<div class="product-grid">
+  <div class="product-card" *ngFor="let product of products">
+    <a [routerLink]="'/products/' + product.id" class="product-name">
+ <img [src]="product.imageUrl" alt="{{ product.name }}" class="product-image" />
+</a>
+    
+    <!-- <h5 class="product-name">{{ product.name }}</h5> -->
+     <a [routerLink]="'/products/' + product.id" class="product-name">
+  {{ product.name }}
+</a>
+<!-- <a [routerLink]="['/products', {{product.id}}]" class="product-name">{{product.name}}</a>
+     -->
+    <p class="product-price">{{ product.unitPrice | currency:'INR':'symbol':'1.0-0' }}</p>
+
+    <div *ngIf="cart[product.id]; else addBtn" class="quantity-controls">
+      <button (click)="decreaseQuantity(product)">−</button>
+      <span>{{totalquan}}</span>
+      <button (click)="increaseQuantity(product)">+</button>
+    </div>
+
+    <ng-template #addBtn>
+      <button class="add-btn" (click)="addToCart(product)">Add to Cart</button>
+    </ng-template>
+  </div>
+</div>
+<div *ngIf="products.length === 0 && showEmptyMessage" class="custom-alert">
+  <p>No products available in this category.</p>  
+</div>

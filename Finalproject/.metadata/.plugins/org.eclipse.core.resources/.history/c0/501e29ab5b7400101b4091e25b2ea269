@@ -1,0 +1,303 @@
+package com.exa.service;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.exa.dto.AddressDTO;
+import com.exa.dto.UserDTO;
+import com.exa.dto.UserLoginDTO;
+import com.exa.dto.UserRegistrartionDTO;
+import com.exa.entity.Address;
+import com.exa.entity.User;
+import com.exa.repository.AddressRepo;
+import com.exa.repository.UserRepo;
+
+@Service
+public class UserService {
+
+    private final UserRepo userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AddressRepo addRepo;
+
+    public UserService(UserRepo userRepository,
+                       PasswordEncoder passwordEncoder, AddressRepo addRepo) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.addRepo=addRepo;
+    }
+
+    public UserDTO registerUser(UserRegistrartionDTO dto) {
+        // Check for duplicate email or username
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Email already in use");
+        }
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new IllegalArgumentException("Username already taken");
+        }
+
+        // Encode password
+        String hashedPassword = passwordEncoder.encode(dto.getPassword());
+
+        // Create User entity
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPassword(hashedPassword);
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setRole("CUSTOMER");
+        user.setCreatedAt(LocalDateTime.now());
+
+        // Map embedded or nested address DTOs
+        if (dto.getAddresses() != null && !dto.getAddresses().isEmpty()) {
+            List<Address> addresses = dto.getAddresses().stream()
+                .map(addrDto -> {
+                    Address address = new Address();
+                    address.setId(addrDto.getId());
+                    address.setReceiverName(addrDto.getReceiverName());
+                    address.setPhoneNumber(addrDto.getPhoneNumber());
+                    address.setLine1(addrDto.getLine1());
+                    address.setLine2(addrDto.getLine2());
+                    address.setCity(addrDto.getCity());
+                    address.setState(addrDto.getState());
+                    address.setZipCode(addrDto.getZipCode());
+                    address.setCountry(addrDto.getCountry());
+                    address.setType(addrDto.getType());
+                    address.setUser(user); // set back-reference
+                    return address;
+                })
+                .collect(Collectors.toList());
+
+            user.setAddresses(addresses);
+        }
+
+        // Save user
+        User savedUser = userRepository.save(user);
+
+        // Map response DTO
+        UserDTO response = new UserDTO();
+        response.setId(savedUser.getId());
+        response.setUsername(savedUser.getUsername());
+        response.setEmail(savedUser.getEmail());
+        response.setRole(savedUser.getRole());
+        response.setPhoneNumber(savedUser.getPhoneNumber());
+
+        return response;
+    }
+    
+    
+    
+    public UserDTO login(UserLoginDTO udto) {
+        Optional<User> sUser = userRepository.findByEmail(udto.getEmail());
+
+        if (sUser.isPresent()) {
+            User savedUser = sUser.get();
+
+            if (passwordEncoder.matches(udto.getPassword(), savedUser.getPassword())) {
+                UserDTO response = new UserDTO();
+                response.setId(savedUser.getId());
+                response.setUsername(savedUser.getUsername());
+                response.setEmail(savedUser.getEmail());
+                response.setRole(savedUser.getRole());
+                response.setPhoneNumber(savedUser.getPhoneNumber());
+                return response;
+            } else {
+                throw new RuntimeException("Invalid password");
+            }
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+    
+    public List<AddressDTO> getAllAddress(UserLoginDTO udto) {
+        Optional<User> sUser = userRepository.findByEmail(udto.getEmail());
+
+        if (sUser.isPresent()) {
+            User savedUser = sUser.get();
+            List<Address> addressList = addRepo.findByUser(savedUser);
+                       
+            if (!addressList.isEmpty()) {
+                return addressList.stream().map(address -> {
+                    AddressDTO dto = new AddressDTO();
+                    dto.setId(address.getId());
+                    dto.setReceiverName(address.getReceiverName());
+                    dto.setPhoneNumber(address.getPhoneNumber());
+                    dto.setLine1(address.getLine1());
+                    dto.setLine2(address.getLine2());
+                    dto.setCity(address.getCity());
+                    dto.setState(address.getState());
+                    dto.setZipCode(address.getZipCode());
+                    dto.setCountry(address.getCountry());
+                    dto.setType(address.getType());
+                    return dto;
+                }).collect(Collectors.toList());
+            }
+        }
+
+        return Collections.emptyList(); // or throw an exception if preferred
+    
+
+        
+       
+    	
+    }
+    
+    public List<AddressDTO> getAllAddressbyId(Long userId) {
+        Optional<User> sUser = userRepository.findById(userId);
+
+        if (sUser.isPresent()) {
+            User savedUser = sUser.get();
+            List<Address> addressList = addRepo.findByUser(savedUser);
+                       
+            if (!addressList.isEmpty()) {
+                return addressList.stream().map(address -> {
+                    AddressDTO dto = new AddressDTO();
+                    dto.setId(address.getId());
+                    dto.setReceiverName(address.getReceiverName());
+                    dto.setPhoneNumber(address.getPhoneNumber());
+                    dto.setLine1(address.getLine1());
+                    dto.setLine2(address.getLine2());
+                    dto.setCity(address.getCity());
+                    dto.setState(address.getState());
+                    dto.setZipCode(address.getZipCode());
+                    dto.setCountry(address.getCountry());
+                    dto.setType(address.getType());
+                    return dto;
+                }).collect(Collectors.toList());
+            }
+        }
+
+        return Collections.emptyList(); // or throw an exception if preferred
+    
+
+        
+       
+    	
+    }
+    
+    public AddressDTO addAddress(Long userId,AddressDTO addrDto) {
+    	Optional<User> user = userRepository.findById(userId);
+    	if(user.isPresent()) {
+    		User u = user.get();
+    		 Address address = new Address();
+    		 address.setId(addrDto.getId());
+    		  address.setReceiverName(addrDto.getReceiverName());
+              address.setPhoneNumber(addrDto.getPhoneNumber());
+             address.setLine1(addrDto.getLine1());
+             address.setLine2(addrDto.getLine2());
+             address.setCity(addrDto.getCity());
+             address.setState(addrDto.getState());
+             address.setZipCode(addrDto.getZipCode());
+             address.setCountry(addrDto.getCountry());
+             address.setType(addrDto.getType());
+             address.setUser(u); // set back-reference
+             Address saved = addRepo.save(address);
+
+             AddressDTO dto = new AddressDTO();
+             dto.setId(saved.getId());
+             dto.setReceiverName(saved.getReceiverName());
+             dto.setPhoneNumber(saved.getPhoneNumber());
+             dto.setLine1(saved.getLine1());
+             dto.setLine2(saved.getLine2());
+             dto.setCity(saved.getCity());
+             dto.setState(saved.getState());
+             dto.setZipCode(saved.getZipCode());
+             dto.setCountry(saved.getCountry());
+             dto.setType(saved.getType());
+             return dto;
+    		
+    	}
+    	else {
+    		throw new RuntimeException("User not found");
+    	}
+    	
+    	
+    }
+    public AddressDTO updateAddress(Long userId, Long addressId, AddressDTO updatedAddress) {
+    	List<Address> addressList = addRepo.findByUserId(userId);
+    	if (!addressList.isEmpty()) {
+    	    Address address = addressList.stream()
+    	        .filter(adr -> adr.getId().equals(addressId))
+    	        .findFirst()
+    	        .orElseThrow(() -> new RuntimeException("Address not found or unauthorized"));
+    	    	address.setId(updatedAddress.getId());
+    	    	address.setReceiverName(updatedAddress.getReceiverName());
+    	        address.setPhoneNumber(updatedAddress.getPhoneNumber());
+    	        address.setLine1(updatedAddress.getLine1());
+    	        address.setLine2(updatedAddress.getLine2());
+    	        address.setCity(updatedAddress.getCity());
+    	        address.setState(updatedAddress.getState());
+    	        address.setZipCode(updatedAddress.getZipCode());
+    	        address.setCountry(updatedAddress.getCountry());
+    	        address.setType(updatedAddress.getType());
+    	        Address saved = addRepo.save(address);
+    	        return mapToDTO(saved);
+    	}
+    	
+    	else {
+    		throw new RuntimeException("Address for user not found");
+    	}
+       
+
+       
+    }
+    
+    private AddressDTO mapToDTO(Address address) {
+        AddressDTO dto = new AddressDTO();
+       
+       dto.setId(address.getId());
+        dto.setReceiverName(address.getReceiverName());
+        dto.setPhoneNumber(address.getPhoneNumber());
+        dto.setLine1(address.getLine1());
+        dto.setLine2(address.getLine2());
+        dto.setCity(address.getCity());
+        dto.setState(address.getState());
+        dto.setZipCode(address.getZipCode());
+        dto.setCountry(address.getCountry());
+        dto.setType(address.getType());
+        return dto;
+    }
+    
+    
+    public AddressDTO getAddressbyAddressId(Long userId, Long addressId){
+    	List<Address> addressList = addRepo.findByUserId(userId);
+    	if (!addressList.isEmpty()) {
+    	    Address address = addressList.stream()
+    	        .filter(adr -> adr.getId().equals(addressId))
+    	        .findFirst()
+    	        .orElseThrow(() -> new RuntimeException("Address not found or unauthorized"));
+    	    return mapToDTO(address);
+    	}	
+    	else {
+    		throw new RuntimeException("Address for user not found");
+        	
+    	}
+    	
+    }
+    
+    public UserDTO updateUserInfo(UserDTO user) {
+    	Optional<User> use = userRepository.findById(user.getId());
+    	if(use.isPresent()) {
+    		User u= use.get();
+    		u.setUsername(user.getUsername());
+    		u.setEmail(user.getEmail());
+    		u.setPhoneNumber(user.getPhoneNumber());
+    		 User savedUser = userRepository.save(u);
+    		 UserDTO newUser= new UserDTO();
+    		 newUser.setUsername(savedUser.getUsername());
+    		 newUser.setEmail(savedUser.getEmail());
+    		 newUser.setPhoneNumber(savedUser.getPhoneNumber());
+    		 newUser.setRole(newUser.getRole());
+    		 return newUser;
+    	}
+    	else {
+    		return new UserDTO();
+    	}
+    }
+}

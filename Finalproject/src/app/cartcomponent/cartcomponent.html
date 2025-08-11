@@ -1,0 +1,44 @@
+<div class="cart-grid">
+  <div class="cart-item" *ngFor="let item of cartItems">
+    <input
+    type="checkbox"
+    [checked]="isSelected(item)"
+    (change)="toggleSelection(item, $event.target.checked)"
+  />
+
+
+    <img [src]="item.imageUrl" alt="{{ item.productName }}" class="product-image" [routerLink]="'/products/' + item.productId" />
+
+    <div class="item-details">
+      <h4>{{ item.productName}}</h4>
+      <p>Price: ₹{{ item.productPrice}}</p>
+
+      <div class="quantity-controls">
+        <button (click)="decrease(item)">−</button>
+        <span>{{ item.quantity }}</span>
+        <button (click)="increase(item)">+</button>
+      </div>
+      
+
+      <p class="subtotal">Subtotal: ₹{{ item.totalprice }}</p>
+
+      <button class="remove-btn" (click)="remove(item)">🗑 Remove</button>
+    </div>
+  </div>
+
+  
+
+  <div class="cart-summary">
+    <app-cart-sidebar></app-cart-sidebar>
+  <h3>Total Cost: ₹{{ totalCost }}</h3>
+
+  <button class="checkout-btn" *ngIf="userId" (click)="placeOrder()">
+    Order Now
+  </button>
+
+  <button class="login-btn" *ngIf="!userId" [routerLink]="'/login'" routerLinkActive="active-link">
+    Login Now
+  </button>
+</div>
+</div>
+<!-- cart.component.html -->

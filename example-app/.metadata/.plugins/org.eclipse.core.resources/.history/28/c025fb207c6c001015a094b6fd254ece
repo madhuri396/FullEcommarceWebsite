@@ -1,0 +1,248 @@
+package com.exa.service;
+
+
+
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.exa.dto.CartItemResponse;
+import com.exa.dto.ProductDTO;
+import com.exa.entity.CartItem;
+import com.exa.entity.Carts;
+import com.exa.repo.CartItemRepository;
+import com.exa.repo.CartRepository;
+import com.exa.repo.ProductClient;
+
+@Service
+public class CartService {
+
+  @Autowired
+  private CartRepository cartRepository;
+
+  @Autowired
+  private CartItemRepository cartItemRepository;
+  
+  @Autowired
+  private ProductClient productClient;
+
+  public Carts getCartByUserId(Long userId) {
+    return cartRepository.findByUserId(userId).orElseGet(() -> {
+      Carts newCart = new Carts();
+      newCart.setUserId(userId);
+      return cartRepository.save(newCart);
+    });
+  }
+
+  
+//  public void addProductToCart(Long userId, Long productId, int quantity) {
+//	  Carts cart = getCartByUserId(userId);
+//
+//    Optional<CartItem> existingItem = cart.getItems().stream()
+//      .filter(item -> item.getProductId().equals(productId))
+//      .findFirst();
+//    int stock= productClient.getProductById(productId).getUnitsInStock();
+//    if (existingItem.isPresent()) {
+//    	int newQty = existingItem.get().getQuantity() + quantity;
+//    	  
+//    	if (newQty <= stock) {
+//    	    existingItem.get().setQuantity(newQty);
+//    	    int quantityToRestore = stock-quantity;
+//	        productClient.updateUnits(productId, quantityToRestore);
+//	    
+//    	    //productClient.getProductById(productId).setUnitsInStock(stock - newQty);
+//    	}
+//    	else{
+//    		throw new RuntimeException("Out of stock");
+//    	}
+//      
+//    } else {
+//      CartItem item = new CartItem();
+//      item.setProductId(productId);
+//      item.setQuantity(quantity);
+//      cart.addItem(item);
+//      int quantityToRestore = stock-quantity;
+//      productClient.updateUnits(productId, quantityToRestore);
+//    }
+//    cartRepository.save(cart);
+//  }
+//  
+//  
+//  public void reduceProductToCart(Long userId, Long productId, int quantity) {
+//	    Carts cart = getCartByUserId(userId);
+//
+//	    Optional<CartItem> existingItem = cart.getItems().stream()
+//	        .filter(item -> item.getProductId().equals(productId))
+//	        .findFirst();
+//
+//	    if (existingItem.isPresent()) {
+//	        CartItem item = existingItem.get();
+//	        int newQuantity = item.getQuantity() - quantity;
+//	        int stock = productClient.getProductById(productId).getUnitsInStock();
+//	        
+//	        if (newQuantity <= 0) {
+//	            // Remove item from cart
+//	            cart.getItems().remove(item);
+//	            
+//	        } else {
+//	            // Update the quantity
+//	            item.setQuantity(newQuantity);
+//	        }
+//
+//	       
+//	        //productClient.getProductById(productId).setUnitsInStock(stock + quantity);
+//	        int quantityToRestore = stock + quantity;
+//	        productClient.updateUnits(productId, quantityToRestore);
+//	        cartRepository.save(cart);
+//	    }
+//	    else {
+//	        throw new RuntimeException("Product not found in cart");
+//	    }
+//	}
+
+//  public void removeItem(Long userId, Long itemId) {
+//    Carts cart = getCartByUserId(userId);
+//    
+//    cart.getItems().removeIf(item -> item.getId().equals(itemId));
+//    cartRepository.save(cart);
+//  }
+  
+  
+  
+  public void addProductToCart(Long userId, Long productId, int quantity) {
+	    Carts cart = getCartByUserId(userId);
+
+	    Optional<CartItem> existingItem = cart.getItems().stream()
+	        .filter(item -> item.getProductId().equals(productId))
+	        .findFirst();
+
+	    int availableStock = productClient.getProductById(productId).getUnitsInStock();
+
+	    if (existingItem.isPresent()) {
+	        int currentQty = existingItem.get().getQuantity();
+	        int newQty = currentQty + quantity;
+
+	        // Check stock availability
+	        if (quantity <= availableStock) {
+	            existingItem.get().setQuantity(newQty);
+	            productClient.decrementStock(productId, quantity); // reduce only added amount
+	        } else {
+	            throw new RuntimeException("Insufficient stock");
+	        }
+	    } else {
+	        // New item, just validate and add
+	        if (quantity <= availableStock) {
+	            CartItem item = new CartItem();
+	            item.setProductId(productId);
+	            item.setQuantity(quantity);
+	            cart.addItem(item);
+	            productClient.decrementStock(productId, quantity);
+	        } else {
+	            throw new RuntimeException("Insufficient stock");
+	        }
+	    }
+
+	    cartRepository.save(cart);
+	}
+  public void reduceProductToCart(Long userId, Long productId, int quantity) {
+	    Carts cart = getCartByUserId(userId);
+
+	    Optional<CartItem> existingItem = cart.getItems().stream()
+	        .filter(item -> item.getProductId().equals(productId))
+	        .findFirst();
+
+	    if (existingItem.isPresent()) {
+	        CartItem item = existingItem.get();
+	        int currentQty = item.getQuantity();
+	        int newQty = currentQty - quantity;
+
+	        if (newQty <= 0) {
+	            cart.getItems().remove(item);
+	        } else {
+	            item.setQuantity(newQty);
+	        }
+
+	        productClient.incrementStock(productId, quantity); // restore removed amount
+	        cartRepository.save(cart);
+	    } else {
+	        throw new RuntimeException("Product not found in cart");
+	    }
+	}
+  
+  public void removeItem(Long userId, Long itemId) {
+	    Carts cart = getCartByUserId(userId);
+
+	    CartItem removedItem = cart.getItems().stream()
+	        .filter(item -> item.getId().equals(itemId))
+	        .findFirst()
+	        .orElse(null);
+
+	    if (removedItem != null) {
+	        cart.getItems().remove(removedItem);
+	        cartRepository.save(cart);
+
+	        // 🔄 Call ProductClient to update units in stock
+	        Long productId = removedItem.getProductId();
+	        int stock= productClient.getProductById(productId).getUnitsInStock();
+	        
+	        
+	        int quantityToRestore = stock+removedItem.getQuantity();
+	        productClient.updateUnits(productId, quantityToRestore);
+	    }
+	}
+  public int getTotalQuantity(Long userId) {
+    return cartItemRepository.findByCartUserId(userId).stream()
+             .mapToInt(CartItem::getQuantity)
+             .sum();
+  }
+  
+  public Double getTotal(Long userId) {
+	    List<CartItem> items = cartItemRepository.findByCartUserId(userId);
+	    System.out.println("Cart items: " + items);
+
+	    return items.stream()
+	        .mapToDouble(item -> {
+	            ProductDTO product = productClient.getProductById(item.getProductId());
+	            return product.getUnitPrice() * item.getQuantity();
+	        })
+	        .sum(); // 💥 This does the accumulation
+	}
+
+//  public List<CartItem> getItems(Long userId) {
+//    return cartItemRepository.findByCartUserId(userId);
+  
+//  }
+//  
+  public List<CartItemResponse> getItems(Long userId) {
+	    List<CartItem> items = cartItemRepository.findByCartUserId(userId);
+
+	    return items.stream().map(item -> {
+	        ProductDTO product = productClient.getProductById(item.getProductId());
+	        return new CartItemResponse(
+	            item.getId(),
+	            item.getProductId(),
+	            product.getName(),
+	            product.getUnitPrice(),
+	           item.getQuantity(),
+	            product.getImageUrl(),
+	            product.getUnitPrice() * item.getQuantity()
+	        );
+	    }).collect(Collectors.toList());
+	}
+  
+  public List<CartItemResponse> getCartItemsWithDetails(Long userId) {
+	    Carts cart = cartRepository.findByUserId(userId).orElse(new Carts());
+	    return cart.getItems().stream().map(item -> {
+	        ProductDTO product = productClient.getProductById(item.getProductId());
+	        return new CartItemResponse(item.getId(), product.getName(), product.getUnitPrice(), item.getQuantity());
+	    }).collect(Collectors.toList());
+	}
+  public ProductDTO fetchProductDetails(Long productId) {
+      return productClient.getProductById(productId);
+  }
+
+}

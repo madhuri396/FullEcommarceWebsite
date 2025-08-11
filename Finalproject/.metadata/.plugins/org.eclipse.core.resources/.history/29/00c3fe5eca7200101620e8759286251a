@@ -1,0 +1,93 @@
+package com.exa.service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.exa.client.ProductClient;
+import com.exa.dto.CartItemDTO;
+import com.exa.dto.OrderRequestDTO;
+import com.exa.dto.ProductDTO;
+import com.exa.entity.Order;
+import com.exa.entity.OrderItem;
+import com.exa.entity.Payment;
+import com.exa.enums.OrderStatus;
+import com.exa.repository.OrderRepository;
+
+@Service
+public class OrderService {
+
+    @Autowired
+    private OrderRepository orderRepo;
+
+    @Autowired
+    private ProductClient productClient;
+
+    @Autowired
+    private RazorpayService razorpayService;
+
+    public Order placeOrder(OrderRequestDTO request) {
+        List<OrderItem> items = new ArrayList<>();
+        double total = 0;
+
+        for (CartItemDTO cartItem : request.getSelectedItems()) {
+            ProductDTO product = productClient.getProductById(cartItem.getProductId());
+
+            OrderItem item = new OrderItem();
+            item.setProductId(product.getId());
+            item.setProductName(product.getName());
+            item.setUnitPrice(product.getPrice());
+            item.setQuantity(cartItem.getQuantity());
+
+            items.add(item);
+            total += item.getUnitPrice() * item.getQuantity();
+        }
+
+        Payment payment = razorpayService.initiatePayment(total, request.getPaymentMethod());
+
+        Order order = new Order();
+        order.setUserId(request.getUserId());
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.CONFIRMED);
+        order.setReceiverName(request.getReceiverName());
+        order.setDeliveryPhone(request.getDeliveryPhone());
+        order.setDeliveryAddress(request.getDeliveryAddress());
+        order.setItems(items);
+        order.setTotalAmount(total);
+        order.setPayment(payment);
+
+        for (OrderItem item : items) {
+            item.setOrder(order);
+        }
+
+        return orderRepo.save(order);
+    }
+    public boolean verifyAndConfirmPayment(String razorpayOrderId, String paymentId, String signature) {
+        boolean isValid = razorpayService.verifySignature(razorpayOrderId, paymentId, signature);
+
+        if (isValid) {
+            Order order = orderRepo.findAll()
+                .stream()
+                .filter(o -> razorpayOrderId.equals(o.getPayment().getRazorpayOrderId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+            order.setStatus(OrderStatus.CONFIRMED);
+            order.getPayment().setStatus("PAID");
+            order.getPayment().setTransactionId(paymentId);
+
+            orderRepo.save(order);
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public List<Order> getOrdersByUser(Long userId) {
+        return orderRepo.findByUserId(userId);
+    }
+}

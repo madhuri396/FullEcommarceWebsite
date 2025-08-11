@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename compilation unit &apos;com.exa.repo.CartRepo.java&apos; to &apos;CartRepository.java&apos;&#x0D;&#x0A;- Original project: &apos;cartService&apos;&#x0D;&#x0A;- Original element: &apos;com.exa.repo.CartRepo.java&apos;&#x0D;&#x0A;- Renamed element: &apos;com.exa.repo.CartRepository.java&apos;" description="Rename compilation unit &apos;CartRepo.java&apos;" flags="2" id="org.eclipse.jdt.ui.rename.compilationunit" input="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.exa.repo{CartRepo.java" name="CartRepository.java" references="false" stamp="1753727779306" version="1.0"/>
+</session>

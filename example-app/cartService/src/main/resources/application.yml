@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: cartService
+  datasource:
+    url: jdbc:mysql://localhost:3306/cart
+    username: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  data:
+    rest:
+      base-path: /api
+
+server:
+  port: 9004
+
+logging:
+  level:
+    root: INFO
+    com.exa.service: DEBUG
+
+# Enable CORS (optional for REST APIs)
+cors:
+  allowed-origins: "*"
+  allowed-methods: "*"
+
+# Custom password encoding config (if needed in service layer)
+security:
+  encoding-strength: 10
+
+

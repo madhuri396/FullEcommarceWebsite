@@ -1,0 +1,31 @@
+<h2 class="checkout-title">🧾 Checkout Summary</h2>
+
+<div class="checkout-container">
+  <div *ngFor="let item of enrichedItems" class="checkout-card">
+    <img [src]="item.imageUrl" alt="{{ item.productName }}" class="product-image" />
+    <div class="item-info">
+      <h3>{{ item.productName }}</h3>
+      <p>Quantity: <strong>{{ item.quantity }}</strong></p>
+      <p>Unit Price: ₹<strong>{{ item.unitPrice }}</strong></p>
+      <p>Subtotal: ₹<strong>{{ item.unitPrice * item.quantity }}</strong></p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<div class="address-section">
+  <h4>📍 Delivery Address</h4>
+  <div *ngIf="address">
+  {{ address.receiverName }}, {{ address.line1 }}, {{ address.line2 }}, {{ address.city }}, {{ address.state }} - {{ address.pincode }}, 📞 {{ address.phoneNumber }}
+</div>
+
+
+</div>
+
+<p class="total-amount">💰 <strong>Total:</strong> ₹{{ totalAmount }}</p>
+
+<div class="button-group">
+  <button class="confirm-btn" (click)="confirmOrder()">✅ Confirm Order</button>
+  <button class="cancel-btn" (click)="cancelOrder()">❌ Cancel Order</button>
+</div>

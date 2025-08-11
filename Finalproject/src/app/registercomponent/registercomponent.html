@@ -1,0 +1,140 @@
+<!-- <p>registercomponent works!</p>
+<form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="container mt-5 p-4 border rounded shadow bg-light">
+  <h2 class="mb-4">User Registration</h2>
+
+  <div class="mb-3">
+    <label for="username" class="form-label">Username</label>
+    <input formControlName="username" id="username" class="form-control" />
+  </div>
+
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input formControlName="email" id="email" type="email" class="form-control" />
+  </div>
+
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input formControlName="password" id="password" type="password" class="form-control" />
+  </div>
+
+  <h4 class="mt-4 mb-3">Address</h4>
+  <div formArrayName="addresses">
+    <div *ngFor="let address of addresses.controls; let i=index" [formGroupName]="i" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Line 1</label>
+        <input formControlName="line1" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Line 2</label>
+        <input formControlName="line2" class="form-control" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">City</label>
+        <input formControlName="city" class="form-control" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">State</label>
+        <input formControlName="state" class="form-control" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Zip Code</label>
+        <input formControlName="zipCode" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Country</label>
+        <input formControlName="country" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Type</label>
+        <select formControlName="type" class="form-select">
+          <option value="shipping">Shipping</option>
+          <option value="billing">Billing</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button type="submit" class="btn btn-primary" [disabled]="registrationSuccess">Register</button>
+  </div>
+
+  <div *ngIf="registrationSuccess" class="alert alert-success mt-4 text-center">
+    🎉 Registration successful!
+    <br />
+    <a routerLink="/login" class="btn btn-outline-success mt-2">Go to Login</a>
+  </div>
+</form> -->
+<div class="form-wrapper">
+  <div class="registration-card shadow-lg bg-white bg-opacity-75 rounded-4 p-4">
+    <h2 class="text-center mb-4 text-primary fw-bold">🌟 Create Your Account</h2>
+
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      <!-- User Info -->
+      <div class="mb-3">
+        <label class="form-label"><i class="bi bi-person-fill me-2"></i>Username</label>
+        <input formControlName="username" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label"><i class="bi bi-envelope-fill me-2"></i>Email</label>
+        <input formControlName="email" type="email" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label"><i class="bi bi-lock-fill me-2"></i>Password</label>
+        <input formControlName="password" type="password" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label"><i class="bi bi-person-fill me-2"></i>PhoneNumber</label>
+        <input formControlName="phoneNumber" class="form-control" />
+      </div>
+      <!-- Address (Single Entry) -->
+      <h5 class="mt-4 text-secondary fw-semibold">📍 Address Info</h5>
+      <div formArrayName="addresses">
+        <div [formGroupName]="0" class="row g-3">
+          <div class="col-12 col-md-6">
+            <input formControlName="receiverName" class="form-control" placeholder="ReceiverName" />
+          </div>
+          <div class="col-12 col-md-6">
+            <input formControlName="phoneNumber" class="form-control" placeholder="PhoneNumber" />
+          </div>
+          <div class="col-12 col-md-6">
+            <input formControlName="line1" class="form-control" placeholder="Line 1" />
+          </div>
+          <div class="col-12 col-md-6">
+            <input formControlName="line2" class="form-control" placeholder="Line 2" />
+          </div>
+          <div class="col-md-4">
+            <input formControlName="city" class="form-control" placeholder="City" />
+          </div>
+          <div class="col-md-4">
+            <input formControlName="state" class="form-control" placeholder="State" />
+          </div>
+          <div class="col-md-4">
+            <input formControlName="zipCode" class="form-control" placeholder="Zip Code" />
+          </div>
+          <div class="col-12 col-md-6">
+            <input formControlName="country" class="form-control" placeholder="Country" />
+          </div>
+          <div class="col-12 col-md-6">
+            <select formControlName="type" class="form-select">
+              <option value="shipping">Shipping</option>
+              <option value="billing">Billing</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-gradient w-100 mt-4" [disabled]="registrationSuccess">
+        Register
+      </button>
+    </form>
+
+    <!-- Success Message -->
+    <div *ngIf="registrationSuccess" class="alert alert-success mt-4 text-center rounded-pill">
+      🎉 Registration successful!
+      <br />
+      <a routerLink="/login" class="btn btn-outline-primary mt-3">Go to Login</a>
+    </div>
+  </div>
+</div>
+

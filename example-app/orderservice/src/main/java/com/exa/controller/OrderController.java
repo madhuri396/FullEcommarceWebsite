@@ -1,0 +1,158 @@
+//package com.exa.controller;
+//
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+//
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.data.domain.Page;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.web.bind.annotation.CrossOrigin;
+//import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.PathVariable;
+//import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RestController;
+//
+//import com.exa.dto.OrderPageResponse;
+//import com.exa.dto.OrderRequestDTO;
+//import com.exa.dto.RazorpayVerificationDTO;
+//import com.exa.entity.Order;
+//import com.exa.service.OrderService;
+//
+//@RestController
+//@RequestMapping("/api/orders")
+//@CrossOrigin("http://localhost:4200")
+//public class OrderController {
+//
+//    @Autowired
+//    private OrderService orderService;
+//
+//    @PostMapping("/place")
+//    public ResponseEntity<Order> placeOrder(@RequestBody OrderRequestDTO request) {
+//        return ResponseEntity.ok(orderService.placeOrder(request));
+//    }
+//
+////    @GetMapping("/user/{userId}")
+////    public ResponseEntity<List<Order>> getOrders(@PathVariable Long userId) {
+////        return ResponseEntity.ok(orderService.getOrdersByUser(userId));
+////    }
+////    @PostMapping("/verify-payment")
+////    public ResponseEntity<String> verifyPayment(@RequestBody Map<String, String> payload) {
+////    	System.out.println("Received payload: {}"+payload);
+////
+////        boolean isValid = orderService.verifyAndConfirmPayment(
+////            payload.get("razorpay_order_id"),
+////            payload.get("razorpay_payment_id"),
+////            payload.get("razorpay_signature")
+////        );
+////
+////        if (isValid) {
+////            return ResponseEntity.ok("Payment verified and order confirmed.");
+////        } else {
+////            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment verification failed.");
+////        }
+////    }
+//    @PostMapping("/verify-payment")
+//    public ResponseEntity<Map<String, Object>> verifyPayment(@RequestBody RazorpayVerificationDTO payload) {
+//        System.out.println("Received payload: " + payload);
+//
+//        boolean isValid = orderService.verifyAndConfirmPayment(
+//            payload.getRazorpay_order_id(),
+//            payload.getRazorpay_payment_id(),
+//            payload.getRazorpay_signature()
+//        );
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("success", isValid);
+//        response.put("message", isValid
+//            ? "✅ Payment verified and order confirmed."
+//            : "❌ Payment verification failed.");
+//
+//        HttpStatus status = isValid ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+//        return new ResponseEntity<>(response, status);
+//    }
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<OrderPageResponse> getOrders(
+//            @PathVariable Long userId,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "5") int size
+//    ) {
+//        Page<Order> orderPage = orderService.getOrdersByUser(userId, page, size);
+//        
+//        OrderPageResponse response = new OrderPageResponse();
+//        response.setOrders(orderPage.getContent());
+//        response.setHasMore(orderPage.hasNext());
+//
+//        return ResponseEntity.ok(response);
+//    }
+//
+//
+//}
+package com.exa.controller;
+
+import com.exa.dto.OrderPageResponse;
+import com.exa.dto.OrderRequestDTO;
+import com.exa.dto.RazorpayVerificationDTO;
+import com.exa.entity.Order;
+import com.exa.service.OrderService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/orders")
+@CrossOrigin("http://localhost:4200")
+public class OrderController {
+
+    @Autowired
+    private OrderService orderService;
+
+    @PostMapping("/place")
+    public ResponseEntity<Order> placeOrder(@RequestBody OrderRequestDTO request) {
+        Order order = orderService.placeOrder(request);
+        return ResponseEntity.ok(order);
+    }
+
+    @PostMapping("/verify-payment")
+    public ResponseEntity<?> verifyPayment(@RequestBody RazorpayVerificationDTO payload) {
+        Order confirmedOrder = orderService.verifyAndConfirmPayment(
+            payload.getRazorpay_order_id(),
+            payload.getRazorpay_payment_id(),
+            payload.getRazorpay_signature()
+        );
+
+        if (confirmedOrder != null) {
+            return ResponseEntity.ok(confirmedOrder);
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "❌ Payment verification failed.");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<OrderPageResponse> getOrders(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Page<Order> orderPage = orderService.getOrdersByUser(userId, page, size);
+
+        OrderPageResponse response = new OrderPageResponse();
+        response.setOrders(orderPage.getContent());
+        response.setHasMore(orderPage.hasNext());
+
+        return ResponseEntity.ok(response);
+    }
+}

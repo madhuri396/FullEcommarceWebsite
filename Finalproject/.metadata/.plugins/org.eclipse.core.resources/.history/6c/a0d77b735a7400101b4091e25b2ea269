@@ -1,0 +1,11 @@
+package com.exa.dto;
+
+public class UserPassChangeDTO {
+	
+	 private Long id;
+	 private String email;
+	    private String oldpassword;
+	    private String newpassword;
+	    
+
+}

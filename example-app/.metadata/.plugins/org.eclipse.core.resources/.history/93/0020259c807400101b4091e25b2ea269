@@ -1,0 +1,105 @@
+package com.exa.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//            .csrf().disable()
+//            .authorizeHttpRequests(auth -> auth
+//                .anyRequest().permitAll()
+//            )
+//            .httpBasic(Customizer.withDefaults())
+//            .build();
+//    }
+    
+    
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//            .csrf().disable()
+//            .authorizeHttpRequests(auth -> auth
+//            	    .requestMatchers("/login").permitAll()
+//            	    .anyRequest().authenticated()
+//            	
+//
+//            )
+//            .build();
+//    }
+//   
+	
+//	@Bean
+//	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//	    http
+//	        .cors() // 👈 Important: enables your CORS config!
+//	        .and()
+//	        .csrf().disable()
+//	        .authorizeHttpRequests(auth -> auth
+//	            .requestMatchers("/login").permitAll()
+//	            .anyRequest().permitAll()
+//	        );
+//
+//	    return http.build();
+//	}
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**")
+//                        .allowedOrigins("http://localhost:4200")
+//                        .allowedMethods("*")
+//                        .allowedHeaders("*");
+//                System.out.println("CORS config applied for http://localhost:4200");
+//    
+//            }
+//            
+//        };
+//        
+//    }
+	 @Bean
+	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	        http
+	            .cors() // Enables CORS
+	            .and()
+	            .csrf().disable() // Disable CSRF for simplicity (enable later for security)
+	            .authorizeHttpRequests(auth -> auth
+	                .anyRequest().permitAll() // Allow all endpoints
+	            ).httpBasic().disable();
+
+	        return http.build();
+	    }
+
+	    @Bean
+	    public WebMvcConfigurer corsConfigurer() {
+	        return new WebMvcConfigurer() {
+	            @Override
+	            public void addCorsMappings(CorsRegistry registry) {
+	                registry.addMapping("/**") // Allow all backend paths
+	                        .allowedOrigins("http://localhost:4200") // ✅ Exact origin
+	                        .allowedMethods("*") // GET, POST, PUT, DELETE, etc.
+	                        .allowedHeaders("*"); // Allow all headers
+	            }
+	        };
+
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return registry -> registry.addMapping("/**")
+//            .allowedOrigins("http://localhost:4200")
+//            .allowedMethods("GET", "POST", "PUT", "DELETE")
+//            .allowedHeaders("*");
+//    }
+//    
+}
+}
